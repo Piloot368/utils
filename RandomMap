@@ -1,0 +1,153 @@
+import java.util.*;
+
+/**
+ * {@code RandomMap} is basically a {@link HashMap} where the second parameter
+ * is an ArrayList that contains the values. This allows a key to
+ * have multiple values that can be gotten by {@link #getList} and {@link #get}
+ * where this one return a random value among the values of the chosen key.
+ *
+ * @see HashMap
+ * @see Map
+ *
+ * @author Piloot368
+ *
+ * @param <K> the type of keys maintained by this map
+ * @param <V> the type of mapped values
+ */
+public class RandomMap<K, V> {
+    /**
+     * The {@link HashMap} on what a {@code RandomMap} is based on
+     */
+    private HashMap<K, ArrayList<V>> map = new HashMap<>();
+    private Random random = new Random();
+
+    /**
+     * Associates the specified value with the specified key in this map.
+     * If the map previously contained a mapping for the key, the old
+     * value remains.
+     *
+     * @param key key with which the specified value is to be associated
+     * @param value value to be associated with the specified key
+     */
+    public void put(K key, V value) {
+        if (map.get(key) == null) {
+            map.put(key, new ArrayList<>());
+        }
+        map.get(key).add(value);
+    }
+
+    /**
+     * Associates all the specified values with the specified key in this map.
+     * If the map previously contained a mapping for the key, the old
+     * value remains.
+     *
+     * @param key key with which the specified value is to be associated
+     * @param values values to be associated with the specified key
+     */
+    public void put(K key, V[] values) {
+        if (map.get(key) == null) {
+            map.put(key, new ArrayList<>());
+        }
+        for (V value: values) {
+            map.get(key).add(value);
+        }
+    }
+    /**
+     * Returns all the values in a {@link List} to which the specified key is mapped.
+     * @param key key with which you want the associated values
+     * @return a list with all the values of the specified key.
+     */
+    public List<V> getList(K key) {
+        return map.get(key);
+    }
+
+    /**
+     * Returns a random value among the values of the specified key is mapped,
+     * or {@code null} if this map contains no mapping for the key.
+     *
+     * <p>More formally, if this map contains a mapping from a key
+     * {@code k} to a value {@code v} such that {@code (key==null ? k==null :
+     * key.equals(k))}, then this method returns {@code v}; otherwise
+     * it returns {@code null}.
+     *
+     * <p>A return value of {@code null} does not <i>necessarily</i>
+     * indicate that the map contains no mapping for the key; it's also
+     * possible that the map explicitly maps the key to {@code null}.
+     * The {@link #containsKey  containsKey} operation may be used to
+     * distinguish these two cases.
+     *
+     * @see #put(K, V)
+     */
+    public V get(K key) {
+        if (map.containsKey(key)) {
+            int index = random.nextInt(map.get(key).size());
+            return map.get(key).get(index);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns {@code true} if this map contains a mapping for the
+     * specified key.
+     *
+     * @param   key   The key whose presence in this map is to be tested
+     * @return {@code true} if this map contains a mapping for the specified
+     * key.
+     */
+    public boolean containsKey(K key) {
+        return map.containsKey(key);
+    }
+
+    /**
+     * Returns {@code true} if this map maps one or more keys to the
+     * specified value.
+     *
+     * @param value value whose presence in this map is to be tested
+     * @return {@code true} if this map maps one or more keys to the
+     *         specified value
+     */
+    public boolean containsValue(V value) {
+        for (K key: map.keySet()) {
+            if (map.get(key).contains(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Removes all of the mappings from this map.
+     * The map will be empty after this call returns.
+     */
+    public void clear() {
+        map.clear();
+    }
+
+    /**
+     * @return all the keys followed by their values and probabilities
+     */
+    @Override
+    public String toString() {
+        String s = "";
+        for (K key: map.keySet()) {
+            HashMap<V, Integer> prob = new HashMap<>();
+            s += key+" ==> ";
+            for (V value: map.get(key)) {
+                if (value.equals("\n")) {
+                    value = (V) "<break line>";
+                }
+                if (!prob.containsKey(value)) {
+                    prob.put(value, 1);
+                } else {
+                    prob.put(value, prob.get(value)+1);
+                }
+            }
+            for (V value : prob.keySet()) {
+                s += "{"+value+": "+prob.get(value)+"/"+map.get(key).size()+"} ";
+            }
+            s += "\n";
+        }
+        return s;
+    }
+}
